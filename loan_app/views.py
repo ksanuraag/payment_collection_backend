@@ -8,6 +8,8 @@ from rest_framework.decorators import api_view
 from rest_framework import serializers
 from rest_framework import status
 from decimal import Decimal
+from django.views.decorators.csrf import csrf_exempt
+
 
 @api_view(['GET'])
 def customer_details(request):
@@ -17,7 +19,7 @@ def customer_details(request):
     return Response({'message':"customer fetched successfully",'data':serializer.data})
 
 
-
+@csrf_exempt
 @api_view(['POST'])
 def make_payment(request):
     account_no = request.data.get("account_no")
@@ -60,7 +62,7 @@ def make_payment(request):
 
     return Response({"message": "Payment successful","data": serializer.data})
 
-
+@csrf_exempt
 @api_view(['GET'])
 def payment_history(request, account_no):
     try:
