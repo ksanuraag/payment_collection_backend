@@ -79,6 +79,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'project.wsgi.application'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': []
+}
+
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
