@@ -19,8 +19,8 @@ def customer_details(request):
     return Response({'message':"customer fetched successfully",'data':serializer.data})
 
 
-@csrf_exempt
 @api_view(['POST'])
+@csrf_exempt
 def make_payment(request):
     account_no = request.data.get("account_no")
     amount = request.data.get("amount")
@@ -62,8 +62,8 @@ def make_payment(request):
 
     return Response({"message": "Payment successful","data": serializer.data})
 
-@csrf_exempt
 @api_view(['GET'])
+@csrf_exempt
 def payment_history(request, account_no):
     try:
         customer=Customer.objects.get(account_no=account_no)
