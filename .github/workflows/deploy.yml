@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
 
           script: |
-            cd ~/payment_collection_backend
+            cd ~/payment_collection_app
 
             git pull origin main
 
