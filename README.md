@@ -1,40 +1,85 @@
 # Loan Payment Collection API
 
-A Django REST API for managing personal loan payments.
-This backend allows customers to view loan details, make EMI payments, and check payment history.
+A Django REST API for managing personal loan EMI payments.
+The system allows customers to view loan details, pay EMIs, and track payment history.
+
+This backend is designed to integrate with a React frontend for the Loan Payment Collection App.
 
 ---
 
-## Tech Stack
+# Tech Stack
 
-* **Backend:** Django, Django REST Framework
-* **Database:** PostgreSQL
-* **Environment Management:** python-decouple
-* **CORS:** django-cors-headers
+Backend
+
+* Django
+* Django REST Framework
+
+Database
+
+* PostgreSQL
+
+Admin Interface
+
+* django-daisy (Modern Django Admin UI)
+
+Configuration
+
+* python-decouple (.env)
+
+Other Tools
+
+* django-cors-headers
 
 ---
 
-## Features
+# Features
 
-* Retrieve loan details for all customers
+* Retrieve loan details of customers
 * Make EMI payments
 * Track payment history
-* Prevent duplicate EMI payments
-* Automatically update EMI status and reduce loan tenure after payment
+* Prevent invalid payment amounts
+* Automatically reduce loan tenure after each EMI payment
+* Track total loan amount and total paid amount
+* Loan marked **PAID when total loan amount is fully paid**
+* Styled admin panel using **django-daisy**
 
 ---
 
-## API Endpoints
+# Loan Payment Logic
 
-### Get Customers
+Example Loan
+
+Total Loan Amount: 2000
+EMI Amount: 500
+Tenure: 4 months
+
+Payment Flow
+
+| EMI Payment | Amount | Remaining Tenure | Total Paid | Status  |
+| ----------- | ------ | ---------------- | ---------- | ------- |
+| Start       | 0      | 4                | 0          | PENDING |
+| EMI 1       | 500    | 3                | 500        | PENDING |
+| EMI 2       | 500    | 2                | 1000       | PENDING |
+| EMI 3       | 500    | 1                | 1500       | PENDING |
+| EMI 4       | 500    | 0                | 2000       | PAID    |
+
+The loan becomes **PAID only when the total loan amount is fully paid**.
+
+---
+
+# API Endpoints
+
+## Get Customers
 
 Retrieve loan details of all customers.
 
+GET
+
 ```
-GET /bank/customer/
+/bank/customer/
 ```
 
-Response Example:
+Response Example
 
 ```json
 {
@@ -43,9 +88,11 @@ Response Example:
     {
       "account_no": "1234567890",
       "issue_date": "2024-01-01",
-      "interest_rate": "8.50",
-      "tenure": 12,
-      "emi_due": "5000.00",
+      "interest_rate": "7.00",
+      "tenure": 4,
+      "emi_due": "500.00",
+      "total_loan_amount": "2000.00",
+      "total_paid_amount": "0.00",
       "emi_status": "PENDING"
     }
   ]
@@ -54,65 +101,91 @@ Response Example:
 
 ---
 
-### Make Payment
+## Make EMI Payment
 
 Submit EMI payment.
 
+POST
+
 ```
-POST /bank/payments/
+/bank/payments/
 ```
 
-Request Body:
+Request Body
 
 ```json
 {
-  "account_no": "1234567890",
-  "amount": 5000
+ "account_no": "1234567890",
+ "amount": 500
 }
 ```
 
-Response:
+Response
 
 ```json
 {
-  "message": "Payment successful",
-  "data": {
-    "payment_amount": "5000.00",
-    "status": "SUCCESS"
+ "message": "Payment successful",
+ "data": {
+  "payment_amount": "500.00",
+  "status": "SUCCESS"
+ }
+}
+```
+
+Behavior
+
+* Payment record created
+* Total paid amount updated
+* Tenure reduced by 1
+* Loan marked **PAID when total amount is reached**
+
+---
+
+## Payment History
+
+Retrieve payment history for a specific customer.
+
+GET
+
+```
+/bank/payments/<account_no>/
+```
+
+Example
+
+```
+/bank/payments/1234567890/
+```
+
+Response Example
+
+```json
+{
+ "message": "payment history fetched",
+ "data": [
+  {
+   "payment_amount": "500.00",
+   "payment_date": "25-03-2026 11:45",
+   "status": "SUCCESS"
   }
+ ]
 }
 ```
 
 ---
 
-### Payment History
+# Installation
 
-Retrieve payment history for a specific account.
-
-```
-GET /bank/payments/<account_no>/
-```
-
-Example:
+## Clone Repository
 
 ```
-GET /bank/payments/1234567890/
-```
-
----
-
-## Installation
-
-### 1. Clone the Repository
-
-```
-git clone https://github.com/yourusername/loan-payment-backend.git
+git clone https://github.com/ksanuraag/loan-payment-backend.git
 cd loan-payment-backend
 ```
 
 ---
 
-### 2. Create Virtual Environment
+## Create Virtual Environment
 
 ```
 python -m venv venv
@@ -121,7 +194,7 @@ source venv/bin/activate
 
 ---
 
-### 3. Install Dependencies
+## Install Dependencies
 
 ```
 pip install -r requirements.txt
@@ -129,12 +202,14 @@ pip install -r requirements.txt
 
 ---
 
-### 4. Configure Environment Variables
+# Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root.
+
+Example
 
 ```
-DJANGO_SECRET_KEY=your-secret-key
+DJANGO_SECRET_KEY=your_secret_key
 
 DB_NAME=loan_db
 DB_USER=postgres
@@ -145,21 +220,29 @@ DB_PORT=5432
 
 ---
 
-### 5. Run Migrations
+# Database Setup
+
+Run migrations
 
 ```
 python manage.py migrate
 ```
 
+Create superuser
+
+```
+python manage.py createsuperuser
+```
+
 ---
 
-### 6. Run Server
+# Run Server
 
 ```
 python manage.py runserver
 ```
 
-Server will start at:
+Server runs at
 
 ```
 http://127.0.0.1:8000/
@@ -167,7 +250,26 @@ http://127.0.0.1:8000/
 
 ---
 
-## Project Structure
+# Django Admin (django-daisy)
+
+Admin panel is enhanced using **django-daisy** for a cleaner interface.
+
+Access admin panel
+
+```
+http://127.0.0.1:8000/admin
+```
+
+Admin allows you to
+
+* Create customers
+* Manage loan data
+* View payment records
+* Monitor EMI payments
+
+---
+
+# Project Structure
 
 ```
 loan-payment-backend
@@ -184,19 +286,25 @@ loan-payment-backend
 │
 ├── manage.py
 ├── requirements.txt
+├── .env
 └── .gitignore
 ```
 
 ---
 
-## Notes
+# Frontend Repository
 
-* Customers can be created through **Django Admin Panel**
-* Payment API validates EMI amount before processing
-* Tenure decreases automatically after successful payment
+The React frontend for this API is maintained in a separate repository.
+
+Frontend features
+
+* Display loan details
+* Pay EMI
+* View payment history
+* API integration with Django backend
 
 ---
 
-## Author
+# Author
 
 Anuraag K S
