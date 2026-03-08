@@ -32,12 +32,14 @@ ALLOWED_HOSTS = ["34.204.52.154",'127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    "django_daisy",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.humanize",
     'loan_app',
     'rest_framework',
     'corsheaders',
