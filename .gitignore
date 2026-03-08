@@ -1,0 +1,55 @@
+# Python cache
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables
+
+.env
+
+# Logs
+
+*.log
+
+# PostgreSQL dumps / backups
+
+*.sql
+*.dump
+
+# Django static & media
+
+staticfiles/
+media/
+static/
+
+# Migration cache
+
+*/migrations/*.pyc
+*/migrations/**pycache**/
+
+# Coverage / testing
+
+.coverage
+htmlcov/
+
+# IDE
+
+.vscode/
+.idea/
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# Ubuntu temp files
+
+*~
