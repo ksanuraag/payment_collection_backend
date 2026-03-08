@@ -13,7 +13,8 @@ class Customer(models.Model):
     tenure = models.IntegerField()
     emi_due= models.DecimalField(max_digits=10, decimal_places=2)
     emi_status = models.CharField(max_length=20, choices=EMI_STATUS, default="PENDING")
-
+    total_loan_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    total_paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return self.account_no

@@ -36,15 +36,23 @@ def make_payment(request):
         customer = Customer.objects.get(account_no=account_no)
     except Customer.DoesNotExist:
         return Response({"error": "customer with this account number doesn't exist"},status=status.HTTP_404_NOT_FOUND)
-    if customer.emi_status=='PAID':
-        return Response({"error":"Payment already done"},status=status.HTTP_400_BAD_REQUEST)
+    if amount != customer.emi_due:
+        return Response({"error": "Amount must match EMI due"}, status=400)
+    if customer.tenure == 0:
+        return Response({"error": "Loan already completed"}, status=400)
     if amount <= 0:
         return Response({"error": "Amount must be greater than 0"},status=status.HTTP_400_BAD_REQUEST)
     if amount ==customer.emi_due:
         payment = Payment.objects.create(customer=customer,payment_amount=amount,status="SUCCESS")
-        customer.emi_status = "PAID"
-        if customer.tenure > 0:
-            customer.tenure -= 1
+        # Update paid amount
+        customer.total_paid_amount += amount
+
+        # Reduce tenure
+        customer.tenure -= 1
+
+        # Check if loan finished
+        if customer.total_paid_amount >= customer.total_loan_amount:
+            customer.emi_status = "PAID"
         customer.save()
         serializer = PaymentSerializer(payment)
     else:

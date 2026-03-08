@@ -37,6 +37,7 @@ class CustomerSerializer(serializers.ModelSerializer):
         return value
 
 class PaymentSerializer(serializers.ModelSerializer):
+    payment_date = serializers.DateTimeField(format="%d-%m-%Y %H:%M")
     class Meta:
         model=Payment
         fields='__all__'
